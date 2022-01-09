@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer
+from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
 
 from .database import Base
@@ -18,6 +18,6 @@ class Compartment(Base):
     __tablename__ = "compartments"
 
     id = Column(Integer, primary_key=True, index=True)
-    Location = Column(String, unique=True)
+    name = Column(String, unique=True)
 
     items = relationship("Item", back_populates="compartment")
