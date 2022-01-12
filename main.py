@@ -1,5 +1,6 @@
 from fastapi import FastAPI, Depends
 from sqlalchemy.orm import Session
+from typing import Optional
 
 from . import crud, models, schemas
 from .database import SessionLocal, engine
@@ -23,5 +24,8 @@ def seed(db: Session = Depends(get_db)):
     }
 
 @app.get("/items", response_model=list[schemas.Item])
-def get_all_items(db: Session = Depends(get_db)):
-    return crud.getAllItems(db=db)
+def get_all_items(
+    db: Session = Depends(get_db),
+    compartment: Optional[str] = None
+):
+    return crud.getItems(db, compartment)
