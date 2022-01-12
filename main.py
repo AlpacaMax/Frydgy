@@ -29,3 +29,10 @@ def get_all_items(
     compartment: Optional[str] = None
 ):
     return crud.getItems(db, compartment)
+
+@app.get("/item/{item_name}", response_model=schemas.Item)
+def get_a_item(
+    item_name: str,
+    db: Session = Depends(get_db)
+):
+    return crud.getItem(db, item_name)

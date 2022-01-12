@@ -38,3 +38,11 @@ def getItems(db: Session, compartment: str = None):
         query = query.filter(Compartment.name==compartment)
 
     return query.all()
+
+def getItem(db: Session, item_name: str):
+    return db.query(
+        Item.name,
+        Item.unit,
+        Item.quantity,
+        Compartment.name.label("compartment")
+    ).filter(Item.name==item_name).first()
