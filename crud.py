@@ -23,7 +23,15 @@ def seed(db: Session):
     db.commit()
     db.refresh(banana)
 
-def getItems(db: Session, compartment: str = None):
+def IsItemExists(db: Session, item_name: str) -> bool:
+    q = db.query(Item).filter(Item.name==item_name)
+    return db.query(q.exists()).scalar()
+
+def IsCompartmentExists(db: Session, compartment: str) -> bool:
+    q = db.query(Compartment).filter(Compartment.name==compartment)
+    return db.query(q.exists()).scalar()
+
+def getItems(db: Session, compartment: str = None) -> list[Item]:
     query = db.query(
         Item.name,
         Item.unit,
@@ -39,10 +47,31 @@ def getItems(db: Session, compartment: str = None):
 
     return query.all()
 
-def getItem(db: Session, item_name: str):
+def getItem(db: Session, item_name: str) -> Item:
     return db.query(
         Item.name,
         Item.unit,
         Item.quantity,
         Compartment.name.label("compartment")
     ).filter(Item.name==item_name).first()
+
+def getCompartment(db: Session, compartment: str) -> Compartment:
+    return db.query(Compartment).\
+              filter(Compartment.name==compartment).\
+              first()
+
+def createItem(db: Session, item: schemas.Item) -> Item:
+    new_item = Item(
+        name = item.name,
+        unit = item.unit,
+        quantity = item.quantity
+    )
+
+    compartment = getCompartment(db, item.compartment)
+    new_item.compartmentId = compartment.id
+    db.add(new_item)
+    db.commit()
+    db.refresh(new_item)
+
+    return new_item
+
