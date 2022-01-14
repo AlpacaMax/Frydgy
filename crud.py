@@ -1,3 +1,4 @@
+from sqlalchemy import update
 from sqlalchemy.orm import Session
 from . import schemas
 from .models import Item, Compartment
@@ -75,3 +76,13 @@ def createItem(db: Session, item: schemas.Item) -> Item:
 
     return new_item
 
+def updateItem(db: Session, item_name: str, item: schemas.ItemUpdate) -> Item:
+    item_dict = item.dict(exclude_unset=True)
+    if ("compartment" in item_dict):
+        item_dict["compartmentId"] = getCompartment(db, item.compartment).id
+        del item_dict["compartment"]
+    stmt = update(Item).where(Item.name==item_name).\
+                        values(**item_dict).\
+                        execution_options(synchronize_session="fetch")
+    db.execute(stmt)
+    return getItem(db, item_name)

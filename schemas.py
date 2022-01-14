@@ -19,3 +19,12 @@ class Compartment(BaseModel):
 
     class Config:
         orm_mode = True
+
+class ItemUpdate(BaseModel):
+    name: Optional[str]
+    unit: Optional[str]
+    quantity: Optional[int] = Field(
+        None,
+        ge=1,
+    )
+    compartment: Optional[str]
