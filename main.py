@@ -43,22 +43,10 @@ def get_a_item(
     status_code=status.HTTP_201_CREATED,
 )
 def create_a_item(
-    item: schemas.Item,
+    item: schemas.ItemCreate,
     db: Session = Depends(get_db)
 ):
-    if (crud.IsItemExists(db, item.name)):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Item already exists!",
-        )
-    if (not crud.IsCompartmentExists(db, item.compartment)):
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Compartment does not exist!",
-        )
-
     crud.createItem(db, item)
-
     return item
 
 @app.put(
@@ -74,17 +62,6 @@ def update_a_item(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Item does not exist!",
-        )
-    if (crud.IsItemExists(db, item.name)):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="New item name conflicts with existing one!",
-        )
-    if (item.compartment is not None
-        and not crud.IsCompartmentExists(db, item.compartment)):
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Compartment does not exist!",
         )
 
     return crud.updateItem(db, item_name, item)

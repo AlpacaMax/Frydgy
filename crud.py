@@ -54,6 +54,9 @@ def getItem(db: Session, item_name: str) -> Item:
         Item.unit,
         Item.quantity,
         Compartment.name.label("compartment")
+    ).join(
+        Compartment,
+        Item.compartmentId==Compartment.id
     ).filter(Item.name==item_name).first()
 
 def getCompartment(db: Session, compartment: str) -> Compartment:
@@ -78,11 +81,15 @@ def createItem(db: Session, item: schemas.Item) -> Item:
 
 def updateItem(db: Session, item_name: str, item: schemas.ItemUpdate) -> Item:
     item_dict = item.dict(exclude_unset=True)
+
     if ("compartment" in item_dict):
         item_dict["compartmentId"] = getCompartment(db, item.compartment).id
         del item_dict["compartment"]
+
     stmt = update(Item).where(Item.name==item_name).\
                         values(**item_dict).\
                         execution_options(synchronize_session="fetch")
+
     db.execute(stmt)
+    db.commit()
     return getItem(db, item_name)
