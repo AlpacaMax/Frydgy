@@ -99,3 +99,13 @@ def deleteItem(db: Session, item_name: str) -> None:
 
     db.execute(stmt)
     db.commit()
+
+def createCompartment(db: Session, compartment: schemas.Compartment) -> Compartment:
+    compartment_dict = compartment.dict(exclude_unset=True)
+    new_compartment = Compartment(**compartment_dict)
+
+    db.add(new_compartment)
+    db.commit()
+    db.refresh(new_compartment)
+
+    return new_compartment

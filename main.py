@@ -85,3 +85,28 @@ def delete_an_item(item_name: str, db: Session = Depends(get_db)):
     return {
         "msg": f"{item_name} deleted successfully!"
     }
+
+@app.get(
+    "/compartment/{cmprtmnt_name}",
+    response_model=schemas.Compartment
+)
+def get_a_compartment(cmprtmnt_name: str, db: Session = Depends(get_db)):
+    cmprtmnt = crud.getCompartment(db, cmprtmnt_name)
+    if (cmprtmnt is None):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Compartment does not exist!",
+        )
+
+    return cmprtmnt
+
+@app.post(
+    "/compartment",
+    response_model=schemas.Compartment,
+    status_code=status.HTTP_201_CREATED,
+)
+def create_a_compartment(
+    cmprtmnt: schemas.CompartmentCreate,
+    db: Session = Depends(get_db),
+):
+    return crud.createCompartment(db, cmprtmnt)

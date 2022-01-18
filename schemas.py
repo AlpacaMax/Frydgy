@@ -37,13 +37,6 @@ class ItemCreate(Item):
         allow_reuse=True
     )(compartment_must_exist)
 
-class Compartment(BaseModel):
-    location: str
-    items: list[Item]
-
-    class Config:
-        orm_mode = True
-
 class ItemUpdate(BaseModel):
     name: Optional[str]
     unit: Optional[str]
@@ -65,3 +58,19 @@ class ItemUpdate(BaseModel):
         "compartment",
         allow_reuse=True
     )(compartment_must_exist)
+
+
+class Compartment(BaseModel):
+    name: str
+
+    class Config:
+        orm_mode = True
+
+class CompartmentCreate(Compartment):
+    @validator("name")
+    def name_not_exist(cls, v):
+        db = SessionLocal()
+        if (crud.IsCompartmentExists(db, v)):
+            raise ValueError("Compartment already exists!")
+        db.close()
+        return v
