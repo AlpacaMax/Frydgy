@@ -1,4 +1,4 @@
-from sqlalchemy import update
+from sqlalchemy import update, delete
 from sqlalchemy.orm import Session
 from . import schemas
 from .models import Item, Compartment
@@ -93,3 +93,9 @@ def updateItem(db: Session, item_name: str, item: schemas.ItemUpdate) -> Item:
     db.execute(stmt)
     db.commit()
     return getItem(db, item_name)
+
+def deleteItem(db: Session, item_name: str) -> None:
+    stmt = delete(Item).where(Item.name==item_name)
+
+    db.execute(stmt)
+    db.commit()
