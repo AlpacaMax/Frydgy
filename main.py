@@ -35,6 +35,12 @@ def get_an_item(
     item_name: str,
     db: Session = Depends(get_db),
 ):
+    if (not crud.IsItemExists(db, item_name)):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Item does not exist!",
+        )
+
     return crud.getItem(db, item_name)
 
 @app.post(
