@@ -125,3 +125,9 @@ def updateCompartment(
     db.commit()
 
     return getCompartment(db, compartment_dict["name"])
+
+def deleteCompartment(db: Session, compartment_name: str) -> None:
+    stmt = delete(Compartment).where(Compartment.name==compartment_name)
+
+    db.execute(stmt)
+    db.commit()

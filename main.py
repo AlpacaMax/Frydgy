@@ -127,3 +127,21 @@ def update_a_compartment(
         )
 
     return crud.updateCompartment(db, cmprtmnt_name, new_cmprtmnt)
+
+@app.delete("/compartment/{cmprtmnt_name}")
+def delete_a_compartment(
+    cmprtmnt_name: str,
+    db: Session = Depends(get_db)
+):
+    if (not crud.IsCompartmentExists(db, cmprtmnt_name)):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Compartment does not exist!",
+        )
+
+    crud.deleteCompartment(db, cmprtmnt_name)
+
+    return {
+        "msg": f"{cmprtmnt_name} deleted successfully!"
+    }
+
