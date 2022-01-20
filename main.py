@@ -110,3 +110,20 @@ def create_a_compartment(
     db: Session = Depends(get_db),
 ):
     return crud.createCompartment(db, cmprtmnt)
+
+@app.put(
+    "/compartment/{cmprtmnt_name}",
+    response_model=schemas.Compartment,
+)
+def update_a_compartment(
+    cmprtmnt_name: str,
+    new_cmprtmnt: schemas.CompartmentCreate,
+    db: Session = Depends(get_db)
+):
+    if (not crud.IsCompartmentExists(db, cmprtmnt_name)):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Compartment does not exist!",
+        )
+
+    return crud.updateCompartment(db, cmprtmnt_name, new_cmprtmnt)

@@ -109,3 +109,19 @@ def createCompartment(db: Session, compartment: schemas.Compartment) -> Compartm
     db.refresh(new_compartment)
 
     return new_compartment
+
+def updateCompartment(
+    db: Session,
+    cmprtmnt_name: str,
+    cmprtmnt: schemas.CompartmentCreate,
+) -> Compartment:
+    compartment_dict = cmprtmnt.dict(exclude_unset=True)
+
+    stmt = update(Compartment).where(Compartment.name==cmprtmnt_name).\
+                               values(**compartment_dict).\
+                               execution_options(synchronize_session="fetch")
+
+    db.execute(stmt)
+    db.commit()
+
+    return getCompartment(db, compartment_dict["name"])
