@@ -10,7 +10,7 @@ class Item(Base):
     name = Column(String, unique=True)
     unit = Column(String)
     quantity = Column(Integer, default=1)
-    compartmentId = Column(Integer, ForeignKey("compartments.id"))
+    compartmentId = Column(Integer, ForeignKey("compartments.id", ondelete="DELETE"))
 
     compartment = relationship("Compartment", back_populates="items")
 
